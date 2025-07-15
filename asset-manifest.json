@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/cartoonimator-tangible-sims/static/css/main.cc4021b1.css",
+    "main.js": "/cartoonimator-tangible-sims/static/js/main.9a324438.js",
+    "static/media/logo-new-dark.svg": "/cartoonimator-tangible-sims/static/media/logo-new-dark.87080a932916e5e6b585dfaea5fa9e8c.svg",
+    "static/media/night_sky_bg.png": "/cartoonimator-tangible-sims/static/media/night_sky_bg.75740d6ff2017bed64b2.png",
+    "static/media/asteroid-sun.png": "/cartoonimator-tangible-sims/static/media/asteroid-sun.746aece21f879b907225.png",
+    "static/media/asteroid-asteroid.png": "/cartoonimator-tangible-sims/static/media/asteroid-asteroid.afbd013b652fcb015ba2.png",
+    "static/media/download-btn.svg": "/cartoonimator-tangible-sims/static/media/download-btn.a4f57512fc5c80d1f23093d98c510ba0.svg",
+    "static/media/capture-btn.svg": "/cartoonimator-tangible-sims/static/media/capture-btn.0bc185f3487d64695998b5733b79c676.svg",
+    "static/media/replay-btn.svg": "/cartoonimator-tangible-sims/static/media/replay-btn.03dedd8d48ae1889318fbf4403018699.svg",
+    "static/media/play-btn.svg": "/cartoonimator-tangible-sims/static/media/play-btn.7dcb0176f14ef61bafc9dc465e016116.svg",
+    "static/media/camera-btn.svg": "/cartoonimator-tangible-sims/static/media/camera-btn.67c33a831d4bd5db9e1cb2c742a73523.svg",
+    "index.html": "/cartoonimator-tangible-sims/index.html",
+    "static/media/back-btn.svg": "/cartoonimator-tangible-sims/static/media/back-btn.eddb25c34e335f23319c11604ed6edda.svg",
+    "static/media/check-mark.svg": "/cartoonimator-tangible-sims/static/media/check-mark.a12205a40543ed5f87724bf803b04e16.svg",
+    "main.cc4021b1.css.map": "/cartoonimator-tangible-sims/static/css/main.cc4021b1.css.map",
+    "main.9a324438.js.map": "/cartoonimator-tangible-sims/static/js/main.9a324438.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cc4021b1.css",
+    "static/js/main.9a324438.js"
+  ]
+}
