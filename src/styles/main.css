@@ -207,13 +207,13 @@ a {
     padding: 15px;
     height: 40px;
     position: absolute;
-    right: 0px;
+    right: 100px;
     bottom: 0px;
 }
 
 .DownloadLoad {
     position: absolute;
-    right: 165px;
+    right: 265px;
     bottom: 20px
 }
 
@@ -222,6 +222,14 @@ a {
     position: absolute;
     padding: 15px;
     left: 0px;
+    bottom: 0px
+}
+
+.StopBtn {
+    height: 40px;
+    position: absolute;
+    padding: 15px;
+    right: 0px;
     bottom: 0px
 }
 

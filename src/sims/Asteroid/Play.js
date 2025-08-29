@@ -3,7 +3,8 @@ import Checkbox from "@mui/material/Checkbox";
 import Whammy from "react-whammy";
 
 import BackBtn from "../../images/back-btn.svg";
-import ReplayBtn from "../../images/replay-btn.svg";
+import StopBtn from "../../images/stop-btn.svg";
+import PlayBtn from "../../images/play-btn.svg";
 import DownloadBtn from "../../images/download-btn.svg";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from "@mui/material/CircularProgress";
@@ -11,6 +12,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 export function PlayPage({setState, simData}) {
     const canvasRef = useRef(null);
     const [playCanvas, setPlayCanvas] = useState(null);
+    const [playing, setPlaying] = useState(null);
 
     // state for orbit toggle
     const [checked, setChecked] = useState(true);
@@ -31,6 +33,7 @@ export function PlayPage({setState, simData}) {
     }, [downloadUrl]);
 
     const playAnimation = (frameCount) => { 
+        console.log(typeof(playCanvas));
         simData.animateOrbit(playCanvas, frameCount, 1080, 720, checked);
     }
 
@@ -134,6 +137,7 @@ export function PlayPage({setState, simData}) {
     useEffect(() => {
         if (canvasRef.current) {
             setPlayCanvas(canvasRef.current);
+            setPlaying(true);
         }
     }, []);
 
@@ -141,7 +145,7 @@ export function PlayPage({setState, simData}) {
         let frameCount = 0;
         let animationFrameId;
 
-        if (playCanvas) {
+        if (playCanvas && playing) {
             const render = () => {
                 frameCount++;
                 playAnimation(frameCount)
@@ -164,12 +168,12 @@ export function PlayPage({setState, simData}) {
                     height={720}
                 />
             </div>
-            <Bottombar onDownload={downloadAnimationNative} downloadValid={!recording} onBack={() => {setState("home")}} setState={setChecked}/>
+            <Bottombar onDownload={downloadAnimationNative} downloadValid={!recording} isPlaying={playing} onBack={() => {setState("home")}} onStop={() => {setPlaying(!playing)}} setState={setChecked}/>
         </div>
     )
 }
 
-function Bottombar({onDownload, downloadValid, onBack, setState}) {
+function Bottombar({onDownload, downloadValid, isPlaying, onBack, onStop, setState}) {
     return (
         <div className="Bottombar">
             <img 
@@ -210,6 +214,21 @@ function Bottombar({onDownload, downloadValid, onBack, setState}) {
                     }}
                 />
             </div>
+            { isPlaying ?
+                    <img 
+                        className="StopBtn"
+                        src={StopBtn}
+                        alt="Stop Button"
+                        onClick={onStop}
+                    />
+                : 
+                    <img 
+                        className="StopBtn"
+                        src={PlayBtn}
+                        alt="Play Button"
+                        onClick={onStop}
+                    />
+            }
             
         </div>
     )
