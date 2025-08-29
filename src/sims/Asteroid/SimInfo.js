@@ -12,9 +12,10 @@ export function AsteroidSimInfo() {
     return (
       <div className="SimInfo">
             <div className="SimInstr">
-                <h1>Asteroid Orbits</h1>
-                <p>Draw your sun and asteroid and simulate the asteroid's path around the sun by placing the cards on the background and capturing with the app.</p>
-                <p>First, capture your space background by clicking the camera button. Then, place your objects on the background and capture again.</p>
+                <h2>Create your own planetary orbits!</h2>
+                <p>Draw your space, sun and planet and simulate the orbital path by placing the cards on the background and capturing with the app.</p>
+                <p>First, capture your space background by clicking the camera button. Then, place your objects on the background and capture again. Finally, click the play button to see the simulation in action!</p>
+                <p>Download the <a href='https://drive.google.com/file/d/1UCOWh7XnjT5EgVVUvtMTDOZAjb8v8bB2/view?usp=sharing'>print template</a> and <a href='https://drive.google.com/file/d/1k5FPlqwA7ukmIAD6Ch9NvOF-csrAVeBL/view?usp=sharing'>instruction zine</a> here.</p>
             </div>
             <div className="SimCards">
                 <ObjectInfo selectedImg={selectedImg} setSelectedImage={setSelectedImage} />
@@ -36,7 +37,7 @@ function ObjectInfo({selectedImg, setSelectedImage}) {
             />
             <ObjectImage
                 image = {AsteroidImg}
-                name = "Asteroid"
+                name = "Planet"
                 active = {(selectedImg === "asteroid")}
                 onClick = {() => selectedImg === "asteroid" ? setSelectedImage("") : setSelectedImage("asteroid")}
             />
@@ -77,7 +78,7 @@ function ImageDesc({ selectedImg }) {
     else if (selectedImg == "asteroid") {
         return (
             <div className="ImageDesc">
-                <p><strong>Asteroid:</strong> The small rock which gets attracted by the sun's gravity and revolves around it.</p>
+                <p><strong>Planet:</strong> The celestial body which gets attracted by the sun's gravity and revolves around it.</p>
             </div>
         );
     }

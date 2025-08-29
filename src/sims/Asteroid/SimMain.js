@@ -16,6 +16,40 @@ export default function AsteroidSim() {
     const [pageState, setPageState] = useState("home");
     simData.updateState("home");
 
+    const [selectedCameraId, setSelectedCameraId] = useState("");
+    const [devices, setDevices] = useState([]);
+
+    useEffect(() => {
+        const setupDevices = setTimeout(async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream.getTracks().forEach(track => track.stop());
+
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === "videoinput");
+                setDevices(videoDevices);
+
+                // Set default camera to the first device
+                if (videoInputs.length > 0) {
+                    // Keep the current selected camera if it's still available
+                    const currentSelectedDeviceStillExists = videoInputs.some(
+                        device => device.deviceId === selectedCameraId
+                    );
+                    if (selectedCameraId && currentSelectedDeviceStillExists) {
+                        setSelectedCameraId(selectedCameraId);
+                    } else {
+                        // Otherwise, set the first available as default
+                        setSelectedCameraId(videoInputs[0].deviceId);
+                    }
+                }
+            } catch (err) {
+                console.error("Error accessing devices: ", err);
+            }
+        }, 500);
+
+        return () => clearTimeout(setupDevices);
+    }, []);
+
     if (pageState === "home") {
         console.log("[pageState] home");
         simData.updateState("home");
@@ -36,7 +70,7 @@ export default function AsteroidSim() {
         return (
             <div className="App">
                 <Titlebar /> 
-                <CameraPage setState={setPageState} simData={simData}/>
+                <CameraPage setState={setPageState} simData={simData} selectedCameraId={selectedCameraId} setSelectedCameraId={setSelectedCameraId} cameraDevices={devices}/>
             </div>
         )
     } 
@@ -46,7 +80,7 @@ export default function AsteroidSim() {
         return (
             <div className="App">
                 <Titlebar /> 
-                <CameraPage setState={setPageState} simData={simData}/>
+                <CameraPage setState={setPageState} simData={simData} selectedCameraId={selectedCameraId} setSelectedCameraId={setSelectedCameraId} cameraDevices={devices}/>
             </div>
         )
     } 

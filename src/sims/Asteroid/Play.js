@@ -6,6 +6,7 @@ import BackBtn from "../../images/back-btn.svg";
 import ReplayBtn from "../../images/replay-btn.svg";
 import DownloadBtn from "../../images/download-btn.svg";
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CircularProgress from "@mui/material/CircularProgress";
 
 export function PlayPage({setState, simData}) {
     const canvasRef = useRef(null);
@@ -13,24 +14,89 @@ export function PlayPage({setState, simData}) {
 
     // state for orbit toggle
     const [checked, setChecked] = useState(true);
+
+    // Variables for recording
+    const mediaRecorderRef = useRef(null);
+    const recordedChunks = useRef([]);
     const [recording, setRecording] = useState(false);
+    const [downloadUrl, setDownloadUrl] = useState("");
+    const [recordingError, setRecordingError] = useState(null);
+
+    useEffect(() => {
+        return () => {
+            if (downloadUrl) {
+                URL.revokeObjectURL(downloadUrl);
+            }
+        };
+    }, [downloadUrl]);
 
     const playAnimation = (frameCount) => { 
         simData.animateOrbit(playCanvas, frameCount, 1080, 720, checked);
     }
+
+    const downloadAnimationNative = useCallback(async () => {
+        if (recording) return;
+        setRecording(true);
+
+        const stream = playCanvas.captureStream(20); // 20 FPS
+        const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/mp4' });
+        mediaRecorderRef.current = mediaRecorder;
+
+        recordedChunks.current = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                recordedChunks.current.push(event.data);
+            }
+        };
+
+        // Handle stopping of recording
+        mediaRecorder.onstop = () => {
+            console.log("Recording stopped, processing video...");
+            const blob = new Blob(recordedChunks.current, { type: 'video/mp4' });
+            const url = URL.createObjectURL(blob);
+            setDownloadUrl(url);
+            setRecording(false);
+            recordedChunks.current = [];
+
+            // Trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'animation.mp4';
+            a.click();
+
+            URL.revokeObjectURL(url);
+            setRecording(false);
+        };
+
+        // Start recording
+        mediaRecorder.start();
+        setRecording(true);
+        console.log("Recording started");
+
+        // Stop recording after 10 seconds
+        const duration = 10000;
+        setTimeout(() => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+                console.log("Recording stopped");
+            }
+        }, duration);
+
+    }, [playCanvas, recording]);
 
     const downloadAnimation = () => {
         if (recording) return;
         setRecording(true);
 
         const duration = 10000; // 10 seconds
-        const fps = 15;
+        const fps = 20;
         const frameInterval = 1000 / fps;
         const totalFrames = Math.round((duration / 1000) * fps);
 
         let currentFrame = 0;
 
-        const encoder = new Whammy.Video(fps); // 30 FPS
+        const encoder = new Whammy.Video(fps); // 20 FPS
 
         let startTime = performance.now();
 
@@ -98,7 +164,7 @@ export function PlayPage({setState, simData}) {
                     height={720}
                 />
             </div>
-            <Bottombar onDownload={downloadAnimation} downloadValid={!recording} onBack={() => {setState("home")}} setState={setChecked}/>
+            <Bottombar onDownload={downloadAnimationNative} downloadValid={!recording} onBack={() => {setState("home")}} setState={setChecked}/>
         </div>
     )
 }
@@ -128,15 +194,19 @@ function Bottombar({onDownload, downloadValid, onBack, setState}) {
                     style={{opacity: "0.2"}}
                 />
             }
+            { downloadValid ?
+                <></>
+                : <CircularProgress className="DownloadLoad" size="30px" style={{color: "#fafafa"}} />
+            }
             <div className="BottomOptions">
                 <FormControlLabel 
-                    control={<Checkbox defaultChecked />} 
-                    label="ORBIT PATH"
+                    control={<Checkbox defaultChecked sx={{color: '#fafafa', '&.Mui-checked': {color: '#fafafa'}}} />} 
+                    label="Orbit Path"
                     onChange={(event) => {
                         setState(event.target.checked);
                     }}
                     sx={{
-                        '& .MuiFormControlLabel-label': { fontFamily: 'IBM PLex Sans', fontSize: '18px', fontWeight: 500},
+                        '& .MuiFormControlLabel-label': { fontFamily: 'Outfit', fontSize: '16px', fontWeight: 400, color: '#fafafa' },
                     }}
                 />
             </div>

@@ -22,7 +22,7 @@ import Select from '@mui/material/Select';
 //     deviceId: "128849aa6d8fc61174b05c1d415cd982031daa69703c92d872b4dd325014aa6f"
 // };
   
-export function CameraPage({setState, simData}) {
+export function CameraPage({setState, simData, selectedCameraId, setSelectedCameraId, cameraDevices}) {
     const webcamRef = useRef(null);
     const canvasRef = useRef(null);
 
@@ -32,7 +32,7 @@ export function CameraPage({setState, simData}) {
     // set lastValidTime to -2000 to ensure frame is false on load
     let lastValidTime = -2000;
 
-    const [selectedCameraId, setSelectedCameraId] = useState("");
+    // const [selectedCameraId, setSelectedCameraId] = useState("");
     
     const processFrame = useCallback(() => {
         if (webcamRef == null) {
@@ -125,36 +125,36 @@ export function CameraPage({setState, simData}) {
                 style={{display: "none"}}
             />
             <CameraCheck check={validFrame} />
-            <Bottombar onClick={() => {captureFrame()}} onBack={() => {setState("home")}} valid={validFrame} setCamera={setSelectedCameraId} />
+            <Bottombar onClick={() => {captureFrame()}} onBack={() => {setState("home")}} valid={validFrame} camera={selectedCameraId} setCamera={setSelectedCameraId} devices={cameraDevices}/>
         </div>
     )
 }
 
-function Bottombar({onClick, onBack, valid, setCamera}) {
-    const [devices, setDevices] = useState([]);
-    const [selectedCamera, setSelectedCamera] = useState("");
+function Bottombar({onClick, onBack, valid, camera, setCamera, devices}) {
+    // const [devices, setDevices] = useState([]);
+    const [selectedCamera, setSelectedCamera] = useState(camera);
 
-    const sxFont = {fontFamily: 'IBM PLex Sans', fontSize: '18px'};
+    const sxFont = {fontFamily: 'Poppins', fontSize: '14px', color: '#fafafa'};
     
-    useEffect(() => {
-        const getDevices = setTimeout(async () => {
-            try {
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                const videoDevices = devices.filter(device => device.kind === "videoinput");
-                setDevices(videoDevices);
+    // useEffect(() => {
+    //     const getDevices = setTimeout(async () => {
+    //         try {
+    //             const devices = await navigator.mediaDevices.enumerateDevices();
+    //             const videoDevices = devices.filter(device => device.kind === "videoinput");
+    //             setDevices(videoDevices);
 
-                // Set default camera to the first device
-                if (videoDevices.length > 0) {
-                    setCamera(videoDevices[0].deviceId);
-                    setSelectedCamera(videoDevices[0].deviceId);
-                }
-            } catch (err) {
-                console.error("Error accessing devices: ", err);
-            }
-        }, 3000);
+    //             // Set default camera to the first device
+    //             if (videoDevices.length > 0) {
+    //                 setCamera(videoDevices[0].deviceId);
+    //                 setSelectedCamera(videoDevices[0].deviceId);
+    //             }
+    //         } catch (err) {
+    //             console.error("Error accessing devices: ", err);
+    //         }
+    //     }, 3000);
 
-        return () => clearTimeout(getDevices);
-    }, []);
+    //     return () => clearTimeout(getDevices);
+    // }, []);
 
     const handleDeviceChange = (event) => {
         console.log(`Setting camera to: ${event.target.value}`);
@@ -175,14 +175,31 @@ function Bottombar({onClick, onBack, valid, setCamera}) {
                 onClick={() => {onBack()}}
             />
             <div className="BottomOptions">
-                <FormControl sx={{ maxWidth: 120 }}>
+                <FormControl sx={{ minWidth: '80px', maxWidth: '120px', maxHeight: '40px', fontSize: '14px' }}>
                     <InputLabel sx={sxFont}>Camera</InputLabel>
                     <Select
                         value={selectedCamera}
                         onChange={handleDeviceChange}
                         autoWidth
                         label="Camera"
-                        sx={sxFont}
+                        sx={{
+                            '.MuiOutlinedInput-notchedOutline': { borderColor: '#6f6f6f' },
+                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#6f6f6f' },
+                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#6f6f6f' },
+                            '.MuiSelect-icon': { color: '#fafafa' },
+                            color: '#fafafa',
+                            maxHeight: '40px',
+                            ...sxFont}}
+                        MenuProps={{
+                            PaperProps: {
+                                sx: {
+                                    backgroundColor: '#2c2c2c',
+                                    color: '#fafafa',
+                                    fontFamily: 'Poppins',
+                                    fontSize: '12px'
+                                },
+                            },
+                        }}
                     >
                         {cameraList}
                     </Select>

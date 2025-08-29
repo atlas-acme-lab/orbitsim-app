@@ -238,7 +238,7 @@ export const AsteroidSimulation = class {
             if(checked){
                 ctx.beginPath();
                 ctx.strokeStyle = "yellow";
-                ctx.lineWidth = 6;
+                ctx.lineWidth = 4;
                 ctx.ellipse(this.ellipsePos.x, this.ellipsePos.y, this.ellipseInfo.width/2, this.ellipseInfo.height/2, this.ellipseInfo.angle, 0, 2 * Math.PI);
                 ctx.stroke();
             }

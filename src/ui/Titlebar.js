@@ -1,4 +1,4 @@
-import LogoImg from '../images/logo-full.svg';
+import LogoImg from '../images/logo-new-dark.svg';
 
 export function Titlebar() {
     return (

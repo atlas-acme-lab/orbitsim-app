@@ -121,6 +121,122 @@ function getPointTransform(point, M) {
     return new cv.Point(parseInt(x, 10), parseInt(y, 10));
 }
 
+function estimateBackgroundColor(src, border=10) {
+    let height = src.rows;
+    let width = src.cols;
+
+    // Collect border pixels
+    let top = src.roi(new cv.Rect(0, 0, width, border));
+    let bottom = src.roi(new cv.Rect(0, height - border, width, border));
+    let left = src.roi(new cv.Rect(0, 0, border, height));
+    let right = src.roi(new cv.Rect(width - border, 0, border, height));
+
+    console.log(`[DEBUG] Collected border pixels; Image dims: ${height},${width}`);
+
+    // Flatten all pixels from each border region into a 2D mat (N x 3)
+    // const borderPixels = new cv.Mat();
+
+    // let pixels = new cv.MatVector();
+    // pixels.push_back(top.reshape(1, top.rows * top.cols));
+    // pixels.push_back(bottom.reshape(1, bottom.rows * bottom.cols));
+    // pixels.push_back(left.reshape(1, left.rows * left.cols));
+    // pixels.push_back(right.reshape(1, right.rows * right.cols));
+
+    // cv.vconcat(pixels, borderPixels);
+
+    // // Calculate average color
+    // const meanColor = cv.mean(borderPixels);
+
+    // // Clean up
+    // top.delete(); bottom.delete(); left.delete(); right.delete();
+    // for (let i = 0; i < pixels.size(); i++) {
+    //     pixels.get(i).delete();
+    // }
+    // pixels.delete(); borderPixels.delete();
+
+    let meanColor = [120, 120, 120, 255];
+
+    return meanColor;
+}
+
+function removeBackgroundPro(frame) {
+  console.log("Removing bg with 30 white tolerance");
+
+    const BG_WHITE_TOLERANCE = 30;
+
+    let imgRGB = new cv.Mat();
+    cv.cvtColor(frame, imgRGB, cv.COLOR_BGR2RGB);
+
+    let bgColor = estimateBackgroundColor(imgRGB);
+
+  console.log(`[DEBUG] Estimate white color to be: ${bgColor}`)
+
+    let lower = new cv.Mat(imgRGB.rows, imgRGB.cols, imgRGB.type(), [
+      Math.max(bgColor[0] - BG_WHITE_TOLERANCE, 0),
+      Math.max(bgColor[1] - BG_WHITE_TOLERANCE, 0),
+      Math.max(bgColor[2] - BG_WHITE_TOLERANCE, 0),
+      0
+    ]);
+
+    let upper = new cv.Mat(imgRGB.rows, imgRGB.cols, imgRGB.type(), [
+      Math.min(bgColor[0] + BG_WHITE_TOLERANCE, 255),
+      Math.min(bgColor[1] + BG_WHITE_TOLERANCE, 255),
+      Math.min(bgColor[2] + BG_WHITE_TOLERANCE, 255),
+      255
+    ]);
+
+    // Create mask
+    let mask = new cv.Mat();
+    cv.inRange(imgRGB, lower, upper, mask);
+    lower.delete(); upper.delete();
+
+    console.log("[DEBUG] Created mask");
+    console.log(mask);
+
+    // Morphological operations
+    let kernel = cv.Mat.ones(3, 3, cv.CV_8U);
+    let maskClosed = new cv.Mat(), maskCleaned = new cv.Mat();
+    cv.morphologyEx(mask, maskClosed, cv.MORPH_CLOSE, kernel);
+    cv.morphologyEx(maskClosed, maskCleaned, cv.MORPH_OPEN, kernel, new cv.Point(-1, -1), 7);
+    mask.delete(); maskClosed.delete(); kernel.delete();
+
+    console.log("[DEBUG] Performed morph operations");
+
+    // Blur and invert to create alpha
+    let maskFloat = new cv.Mat();
+    maskCleaned.convertTo(maskFloat, cv.CV_32F, 1.0 / 255);
+    let maskBlur = new cv.Mat();
+    cv.GaussianBlur(maskFloat, maskBlur, new cv.Size(11, 11), 0);
+
+    console.log("[DEBUG] Blurred mask");
+
+    let alpha = new cv.Mat();
+    let ones = new cv.Mat(maskBlur.rows, maskBlur.cols, cv.CV_32F, new cv.Scalar(1.0));
+    cv.subtract(ones, maskBlur, alpha); // 1.0 - blurred
+    alpha.convertTo(alpha, cv.CV_8U, 255);
+
+    console.log("[DEBUG] Final mask");
+
+    // Split original and merge with alpha
+    let channels = new cv.MatVector();
+    cv.split(frame, channels);
+    channels.push_back(alpha);
+    // let dst = new cv.Mat();
+    cv.merge(channels, frame);
+
+    console.log(`[DEBUG] Image channels:`)
+    console.log(channels);
+
+    cv.cvtColor(alpha, frame, cv.COLOR_GRAY2RGBA);
+
+
+    // Clean up
+    imgRGB.delete(); maskFloat.delete(); maskBlur.delete();
+    maskCleaned.delete(); alpha.delete(); channels.delete();
+
+
+}
+
 function removeBackground(frame) {
     let imgGrey = new cv.Mat(frame.rows, frame.cols, frame.type());
     cv.cvtColor(frame, imgGrey, cv.COLOR_RGBA2GRAY);
@@ -129,6 +245,33 @@ function removeBackground(frame) {
     let fg = new cv.Mat.zeros(frame.rows, frame.cols, frame.type());
     // cv.cvtColor(fg, fg, cv.COLOR_RGBA2RGB);
     cv.threshold(imgGrey, fg, 170, 255, cv.THRESH_BINARY_INV);
+
+    // // Morphological operations
+    // let kernel = cv.Mat.ones(3, 3, cv.CV_8U);
+    // let maskClosed = new cv.Mat(), maskCleaned = new cv.Mat();
+    // cv.morphologyEx(fg, maskClosed, cv.MORPH_CLOSE, kernel);
+    // cv.morphologyEx(maskClosed, maskCleaned, cv.MORPH_OPEN, kernel, new cv.Point(-1, -1), 7);
+    // // mask.delete(); 
+    // maskClosed.delete(); kernel.delete();
+
+    // // Blur and invert to create alpha
+    // let maskFloat = new cv.Mat();
+    // maskCleaned.convertTo(maskFloat, cv.CV_32F, 1.0 / 255);
+    // let maskBlur = new cv.Mat();
+    // cv.GaussianBlur(maskFloat, maskBlur, new cv.Size(11, 11), 0);
+
+    // console.log("[DBUG] Blurred mask");
+
+    // let alpha = new cv.Mat();
+    // let ones = new cv.Mat(maskBlur.rows, maskBlur.cols, cv.CV_32F, new cv.Scalar(1.0));
+    // cv.subtract(ones, maskBlur, alpha); // 1.0 - blurred
+    // alpha.convertTo(alpha, cv.CV_8U, 255);
+
+    // alpha.copyTo(fg);
+
+  console.log("[DBUG] Finished mask");
+
+
     cv.cvtColor(fg, fg, cv.COLOR_GRAY2RGBA);
     cv.bitwise_and(frame, fg, frame);
 
@@ -223,6 +366,7 @@ export function findObjects(frame, markers, M, objects) {
             );
 
             removeBackground(dst);
+            // removeBackgroundPro(dst);
 
             // Crop object and add to map
             let pos = new cv.Point(center.x - side / 2, center.y - side / 2);

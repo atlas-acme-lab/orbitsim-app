@@ -1,7 +1,7 @@
 {
     "name": "cartoonimator-tangible-sims",
     "version": "1.0.0",
-    "homepage": "https://krithik-ranjan.github.io/cartoonimator-tangible-sims",
+    "homepage": "https://atlas-acme-lab.github.io/orbitsim-app",
     "description": "",
     "keywords": [],
     "main": "src/index.tsx",
