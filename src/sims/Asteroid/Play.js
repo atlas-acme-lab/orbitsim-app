@@ -4,8 +4,11 @@ import Whammy from "react-whammy";
 
 import BackBtn from "../../images/back-btn.svg";
 import StopBtn from "../../images/stop-btn.svg";
+import StopBtnMobile from "../../images/stop-btn-mobile.svg";
 import PlayBtn from "../../images/play-btn.svg";
+import PlayBtnMobile from "../../images/play-btn-mobile.svg";
 import DownloadBtn from "../../images/download-btn.svg";
+import DownloadBtnMobile from "../../images/download-btn-mobile.svg";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -174,6 +177,7 @@ export function PlayPage({setState, simData}) {
 }
 
 function Bottombar({onDownload, downloadValid, isPlaying, onBack, onStop, setState}) {
+    console.log(window.innerWidth);
     return (
         <div className="Bottombar">
             <img 
@@ -183,20 +187,43 @@ function Bottombar({onDownload, downloadValid, isPlaying, onBack, onStop, setSta
                 onClick={onBack}
             />
             { downloadValid ? 
-                <img 
-                    className="DownloadBtn"
-                    src={DownloadBtn}
-                    alt="Download Button"
-                    onClick={onDownload}
-                    style={{opacity: "1.0"}}
-                /> :
-                <img 
-                    className="DownloadBtn"
-                    src={DownloadBtn}
-                    alt="Download Button"
-                    onClick={() => {}}
-                    style={{opacity: "0.2"}}
-                />
+                // <img 
+                //     className="DownloadBtn"
+                //     src={DownloadBtn}
+                //     alt="Download Button"
+                //     onClick={onDownload}
+                //     style={{opacity: "1.0"}}
+                // /> :
+                // <img 
+                //     className="DownloadBtn"
+                //     src={DownloadBtn}
+                //     alt="Download Button"
+                //     onClick={() => {}}
+                //     style={{opacity: "0.2"}}
+                // />
+                <picture>
+                    <source srcSet={DownloadBtn} media='(min-width: 960px)' />
+                    <source srcSet={DownloadBtnMobile} media='(max-width: 960px)' />
+                    <img 
+                        className="DownloadBtn"
+                        src={DownloadBtn}
+                        alt="Download Button"
+                        onClick={onDownload}
+                        style={{opacity: "1.0"}} 
+                    />
+                </picture>
+                :
+                <picture>
+                    <source srcSet={DownloadBtn} media='(min-width: 960px)' />
+                    <source srcSet={DownloadBtnMobile} media='(max-width: 960px)' />
+                    <img 
+                        className="DownloadBtn"
+                        src={DownloadBtn}
+                        alt="Download Button"
+                        onClick={onDownload}
+                        style={{opacity: "0.2"}} 
+                    />
+                </picture>
             }
             { downloadValid ?
                 <></>
@@ -215,19 +242,27 @@ function Bottombar({onDownload, downloadValid, isPlaying, onBack, onStop, setSta
                 />
             </div>
             { isPlaying ?
+                <picture>
+                    <source srcSet={StopBtn} media='(min-width: 960px)' />
+                    <source srcSet={StopBtnMobile} media='(max-width: 960px)' />
                     <img 
                         className="StopBtn"
                         src={StopBtn}
                         alt="Stop Button"
                         onClick={onStop}
                     />
+                </picture>
                 : 
+                <picture>
+                    <source srcSet={PlayBtn} media='(min-width: 960px)' />
+                    <source srcSet={PlayBtnMobile} media='(max-width: 960px)' />
                     <img 
                         className="StopBtn"
                         src={PlayBtn}
                         alt="Play Button"
                         onClick={onStop}
                     />
+                </picture>
             }
             
         </div>

@@ -185,12 +185,26 @@
         bottom: 10px;
     }
 
-    .DownloadBtn {
+    .StopBtn {
         padding: 10px;
         height: 40px;
         position: absolute;
         right: 0px;
         bottom: 0px;
+    }
+
+    .DownloadBtn {
+        padding: 10px;
+        height: 40px;
+        position: absolute;
+        right: 50px;
+        bottom: 0px;
+    }
+
+    .DownloadLoad {
+        position: absolute;
+        right: 110px;
+        bottom: 15px
     }
 
     .BackBtn {
@@ -202,11 +216,11 @@
     }
 
     .BottomOptions {
-        margin-left: 70px;
-        /* position: fixed; */
-        /* height: 40px;
-        bottom: 20px;
-        left: 70px; */
+        /* margin-left: 70px; */
+        position: absolute;
+        height: 40px;
+        bottom: 10px;
+        left: 70px;
     }
 
 }

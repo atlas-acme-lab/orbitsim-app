@@ -285,3 +285,11 @@ a {
     background-color: #6f6f6f;
 }
 
+.BottomOptions {
+        /* margin-left: 70px; */
+        position: absolute;
+        height: 40px;
+        bottom: 15px;
+        left: 70px;
+    }
+
